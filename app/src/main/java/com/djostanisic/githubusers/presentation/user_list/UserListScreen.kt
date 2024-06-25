@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,15 +29,17 @@ fun UserListScreen(
     navController: NavController,
     viewModel: UserListViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+    val state = viewModel.state
     val coroutineScope = rememberCoroutineScope()
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = state.isLoading)
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
 
     SwipeRefresh(
         state = swipeRefreshState,
         onRefresh = {
             coroutineScope.launch {
-                viewModel.getUsers()
+                swipeRefreshState.isRefreshing = true
+                viewModel.reset()
+                swipeRefreshState.isRefreshing = false
             }
         },
         modifier = Modifier.fillMaxSize(),
@@ -50,10 +51,15 @@ fun UserListScreen(
                 contentColor = MaterialTheme.colorScheme.primary
             )
         }
-    ) {
+    )
+    {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(state.users) { user ->
+                items(state.users.size) { i ->
+                    val user = state.users[i]
+                    if(i >= state.users.size - 1 && !state.endReached && !state.isLoading) {
+                        viewModel.loadNextItems()
+                    }
                     UserListItem(
                         user = user,
                         onItemClick = {
@@ -62,7 +68,7 @@ fun UserListScreen(
                     )
                 }
             }
-            if (state.error.isNotBlank()) {
+            if (state.error != null) {
                 Text(
                     text = state.error,
                     color = MaterialTheme.colorScheme.error,

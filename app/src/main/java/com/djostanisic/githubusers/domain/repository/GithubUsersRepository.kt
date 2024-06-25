@@ -6,7 +6,7 @@ import com.djostanisic.githubusers.data.remote.dto.OrganizationDto
 
 interface GithubUsersRepository {
 
-    suspend fun getUsers(): List<GithubUserDto>
+    suspend fun getUsers(page: Int, pageSize: Int): List<GithubUserDto>
 
     suspend fun getUserDetails(userName: String): GithubUserDetailsDto
 

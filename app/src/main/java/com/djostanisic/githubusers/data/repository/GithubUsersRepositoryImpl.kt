@@ -11,8 +11,8 @@ class GithubUsersRepositoryImpl @Inject constructor(
     private val api: GithubUsersApi
 ) : GithubUsersRepository {
 
-    override suspend fun getUsers(): List<GithubUserDto> {
-        return api.getUsers()
+    override suspend fun getUsers(page: Int, pageSize: Int): List<GithubUserDto> {
+        return api.getUsers(page, pageSize)
     }
 
     override suspend fun getUserDetails(userName: String): GithubUserDetailsDto {

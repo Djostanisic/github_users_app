@@ -13,10 +13,10 @@ import javax.inject.Inject
 class GetUsersUseCase @Inject constructor(
     private val repository: GithubUsersRepository
 ) {
-    operator fun invoke(): Flow<Resource<List<GithubUser>>> = flow {
+    operator fun invoke(page: Int, perPage: Int): Flow<Resource<List<GithubUser>>> = flow {
         try {
             emit(Resource.Loading())
-            val users = repository.getUsers().map { it.toGithubUser() }
+            val users = repository.getUsers(page, perPage).map { it.toGithubUser() }
             emit(Resource.Success(users))
         } catch (e: HttpException) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))

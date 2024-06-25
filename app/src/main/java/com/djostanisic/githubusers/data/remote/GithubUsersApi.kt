@@ -5,10 +5,14 @@ import com.djostanisic.githubusers.data.remote.dto.GithubUserDto
 import com.djostanisic.githubusers.data.remote.dto.OrganizationDto
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface GithubUsersApi {
-    @GET ("/users")
-    suspend fun getUsers(): List<GithubUserDto>
+    @GET("users")
+    suspend fun getUsers(
+        @Query("since") page: Int,
+        @Query("per_page") pageSize: Int
+    ): List<GithubUserDto>
 
     @GET ("/users/{userName}")
     suspend fun getUserDetails(@Path("userName") userName: String): GithubUserDetailsDto
