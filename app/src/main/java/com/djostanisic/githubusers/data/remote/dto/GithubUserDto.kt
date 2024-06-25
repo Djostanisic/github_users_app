@@ -6,7 +6,7 @@ data class GithubUserDto(
     val login: String,
     val id: Int,
     val nodeId: String,
-    val avatarUrl: String,
+    val avatar_url: String,
     val gravatarId: String,
     val url: String,
     val htmlUrl: String,
@@ -27,6 +27,6 @@ fun GithubUserDto.toGithubUser(): GithubUser {
     return GithubUser(
         login = login,
         id = id,
-        avatarUrl = avatarUrl
+        avatarUrl = avatar_url
     )
 }

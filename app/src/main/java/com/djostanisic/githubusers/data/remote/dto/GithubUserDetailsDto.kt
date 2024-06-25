@@ -7,7 +7,7 @@ data class GithubUserDetailsDto(
     val login: String,
     val id: Int,
     val nodeId: String,
-    val avatarUrl: String,
+    val avatar_url: String,
     val gravatarId: String,
     val url: String,
     val htmlUrl: String,
@@ -16,7 +16,7 @@ data class GithubUserDetailsDto(
     val gistsUrl: String,
     val starredUrl: String,
     val subscriptionsUrl: String,
-    val organizationsUrl: String,
+    val organizations_url: String?,
     val reposUrl: String,
     val eventsUrl: String,
     val receivedEventsUrl: String,
@@ -34,18 +34,23 @@ data class GithubUserDetailsDto(
     val publicGists: Int,
     val followers: Int,
     val following: Int,
-    val createdAt: String,
+    val created_at: String,
     val updatedAt: String
 )
 
 fun GithubUserDetailsDto.toGithubUserDetails(): GithubUserDetails {
+    val formattedDate = created_at.split("T")[0].let { date ->
+        val parts = date.split("-")
+        "${parts[2]}.${parts[1]}.${parts[0]}"
+    }
+
     return GithubUserDetails(
-        avatarUrl = avatarUrl,
+        avatarUrl = avatar_url,
         email = email,
         name = name,
-        organizationsUrl = organizationsUrl,
-        followersUrl = followersUrl,
-        followingUrl = followingUrl,
-        createdAt = createdAt
+        organizationsUrl = organizations_url,
+        followers = followers,
+        following = following,
+        createdAt = formattedDate
     )
 }
