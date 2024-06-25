@@ -10,14 +10,20 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.djostanisic.githubusers.presentation.Screen
 import com.djostanisic.githubusers.presentation.user_list.components.UserListItem
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserListScreen(
@@ -25,30 +31,51 @@ fun UserListScreen(
     viewModel: UserListViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
-    
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn (modifier = Modifier.fillMaxSize()) {
-            items(state.users) {user ->
-                UserListItem(
-                    user = user,
-                    onItemClick =  {
-                        navController.navigate(Screen.UserDetailsScreen.route + "/${user.login}")
-                    })
+    val coroutineScope = rememberCoroutineScope()
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = state.isLoading)
+
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = {
+            coroutineScope.launch {
+                viewModel.getUsers()
             }
-        }
-        if(state.error.isNotBlank()) {
-            Text(
-                text = state.error,
-                color = MaterialTheme.colorScheme.error,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .align(Alignment.Center)
+        },
+        modifier = Modifier.fillMaxSize(),
+        indicator = { swipeState, trigger ->
+            SwipeRefreshIndicator(
+                state = swipeState,
+                refreshTriggerDistance = trigger,
+                backgroundColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.primary
             )
         }
-        if(state.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(state.users) { user ->
+                    UserListItem(
+                        user = user,
+                        onItemClick = {
+                            navController.navigate(Screen.UserDetailsScreen.route + "/${user.login}")
+                        }
+                    )
+                }
+            }
+            if (state.error.isNotBlank()) {
+                Text(
+                    text = state.error,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .align(Alignment.Center)
+                )
+            }
+            if (state.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
         }
     }
 }

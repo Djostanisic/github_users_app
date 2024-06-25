@@ -23,7 +23,7 @@ class UserListViewModel @Inject constructor(
         getUsers()
     }
 
-    private fun getUsers() {
+    fun getUsers() {
         getUsersUseCase().onEach { result ->
             when(result) {
                 is Resource.Success -> {

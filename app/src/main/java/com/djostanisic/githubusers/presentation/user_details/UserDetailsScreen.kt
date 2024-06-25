@@ -193,8 +193,7 @@ fun UserDetailsScreen(
                                     Text(
                                         text = organizationsState.error,
                                         style = MaterialTheme.typography.displaySmall,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(top = 10.dp)
+                                        fontWeight = FontWeight.Bold
                                     )
                                 } else if (organizationsState.isLoading) {
                                     Box(modifier = Modifier.fillMaxWidth()) {

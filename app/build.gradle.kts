@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.coil.compose)
+    implementation(libs.accompanist.swiperefresh)
     kapt(libs.hilt.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
